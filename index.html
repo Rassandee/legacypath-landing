@@ -571,6 +571,56 @@ footer {
     <h2 class="section-h reveal">Transparent.<br/><em>Kein Abo-Zwang.</em></h2>
     <p class="section-p reveal">Zahle einmalig oder monatlich — du entscheidest. Kein verstecktes Kleingedrucktes.</p>
 
+    <!-- ═══════════════════════════════════════════════════
+         EARLY ADOPTER COUNTER
+         ↓ NUR DIESE ZAHL ANPASSEN ↓
+    ═══════════════════════════════════════════════════ -->
+    <script>
+      const EARLY_ADOPTER_TAKEN = 7;   // ← HIER ANPASSEN (wie viele bereits gekauft haben)
+      const EARLY_ADOPTER_TOTAL = 50;  // ← Gesamtplätze Phase 1 (nicht ändern)
+    </script>
+    <!-- ═══════════════════════════════════════════════════ -->
+
+    <!-- Early Adopter Banner -->
+    <div id="ea-banner" class="reveal" style="
+      margin:32px auto 40px;max-width:640px;
+      background:linear-gradient(135deg,rgba(200,150,30,.08),rgba(200,150,30,.15));
+      border:1.5px solid #c8961e55;border-radius:16px;padding:24px 28px;
+      text-align:center;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;
+        background:linear-gradient(90deg,#c8961e,#f0c060,#c8961e);"></div>
+
+      <div style="font-size:12px;color:#c8961e;font-weight:700;letter-spacing:.15em;
+        text-transform:uppercase;margin-bottom:10px;">⚡ PHASE 1 — EARLY ADOPTER</div>
+
+      <!-- Fortschrittsbalken -->
+      <div style="margin:0 auto 12px;max-width:400px;">
+        <div style="display:flex;justify-content:space-between;
+          font-size:12px;color:#888;margin-bottom:6px;">
+          <span id="ea-taken-label">7 Plätze vergeben</span>
+          <span id="ea-left-label">43 noch verfügbar</span>
+        </div>
+        <div style="height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;">
+          <div id="ea-bar" style="height:100%;border-radius:5px;
+            background:linear-gradient(90deg,#c8961e,#f0c060);
+            transition:width 1s ease;width:14%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;
+          font-size:10px;color:#666;margin-top:4px;">
+          <span>0</span>
+          <span id="ea-total-label">50 Plätze total</span>
+        </div>
+      </div>
+
+      <div style="font-size:22px;font-weight:700;color:#f0c060;font-family:'DM Mono',monospace;
+        margin-bottom:4px;">
+        <span id="ea-left-big">43</span> von <span id="ea-total-big">50</span> Plätzen frei
+      </div>
+      <div style="font-size:13px;color:#a08040;">
+        Nach Phase 1 steigt der Preis auf <strong style="color:#c8961e;">69 USDC</strong>
+      </div>
+    </div>
+
     <div class="pricing-grid">
       <div class="price-card reveal">
         <div class="price-name">Monatlich</div>
@@ -587,8 +637,8 @@ footer {
         <a href="#kontakt" class="price-btn price-btn-outline">Monatlich starten</a>
       </div>
 
-      <div class="price-card featured reveal">
-        <div class="price-badge">EMPFOHLEN</div>
+      <div class="price-card featured reveal" style="position:relative;overflow:hidden;">
+        <div class="price-badge">⚡ PHASE 1 · NUR <span id="badge-left">43</span> PLÄTZE</div>
         <div class="price-name">Early Adopter Lifetime</div>
         <div class="price-amount"><sup>$</sup>49</div>
         <div class="price-period">USDC · einmalig für immer</div>
@@ -598,13 +648,70 @@ footer {
           <li>Alle zukünftigen Updates inklusive</li>
           <li>Early Adopter Badge</li>
           <li>Direkte Feedback-Linie</li>
-          <li>Preis gilt nur jetzt</li>
+          <li style="color:#c8961e;font-weight:600;">⚡ Preis steigt nach 50 Käufen</li>
         </ul>
         <a href="#kontakt" class="price-btn price-btn-gold">Lifetime sichern →</a>
+        <!-- Countdown Streifen -->
+        <div style="margin-top:12px;padding:8px;border-radius:8px;
+          background:rgba(200,150,30,.1);border:1px solid #c8961e33;
+          font-size:11px;color:#a08040;text-align:center;">
+          Phase 2 startet bei: <strong style="color:#c8961e;">70 USDC</strong> — für die nächsten 50 Plätze
+        </div>
       </div>
     </div>
+
+    <!-- Phase 2 Teaser -->
+    <div class="reveal" style="margin-top:32px;max-width:640px;margin-left:auto;margin-right:auto;
+      border:1px dashed #3a3a5a;border-radius:12px;padding:20px 24px;
+      background:rgba(255,255,255,.02);text-align:center;">
+      <div style="font-size:11px;color:#5060a0;font-weight:700;letter-spacing:.15em;
+        text-transform:uppercase;margin-bottom:8px;">🔮 PHASE 2 — KOMMT BALD</div>
+      <div style="font-size:16px;font-weight:600;color:#8090c0;margin-bottom:6px;">
+        Nächste 50 Plätze · <span style="color:#c8961e;">69 USDC Lifetime</span>
+      </div>
+      <div style="font-size:12px;color:#5060a0;line-height:1.7;">
+        Nach den ersten 50 Early Adoptern öffnet Phase 2 zum erhöhten Preis.<br/>
+        Monatlich bleibt bei 12 USDC — nur Lifetime wird teurer.
+      </div>
+    </div>
+
   </div>
 </section>
+
+<script>
+  // Early Adopter Counter dynamisch befüllen
+  (function(){
+    const taken = typeof EARLY_ADOPTER_TAKEN !== 'undefined' ? EARLY_ADOPTER_TAKEN : 0;
+    const total = typeof EARLY_ADOPTER_TOTAL !== 'undefined' ? EARLY_ADOPTER_TOTAL : 50;
+    const left  = Math.max(0, total - taken);
+    const pct   = Math.min(100, Math.round((taken / total) * 100));
+
+    // Werte setzen
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+    set('ea-taken-label', taken + ' Plätze vergeben');
+    set('ea-left-label',  left  + ' noch verfügbar');
+    set('ea-left-big',    left);
+    set('ea-total-big',   total);
+    set('ea-total-label', total + ' Plätze total');
+    set('badge-left',     left);
+
+    // Balken animieren
+    const bar = document.getElementById('ea-bar');
+    if(bar){
+      bar.style.width = '0%';
+      setTimeout(() => bar.style.width = pct + '%', 300);
+    }
+
+    // Wenn ausverkauft
+    if(left === 0){
+      const banner = document.getElementById('ea-banner');
+      if(banner){
+        banner.style.borderColor = '#e83858';
+        banner.style.background  = 'rgba(232,56,88,.08)';
+      }
+    }
+  })();
+</script>
 
 <!-- PAYMENT -->
 <section class="payment-section" id="kontakt">
