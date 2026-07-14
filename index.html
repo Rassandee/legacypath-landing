@@ -702,7 +702,7 @@ footer {
           <li>JSON Backup & Restore</li>
           <li>Monatlich kündbar</li>
         </ul>
-        <a href="#kontakt" class="price-btn price-btn-outline">Monatlich starten</a>
+        <a href="#" onclick="lpBuy('monthly');return false;" class="price-btn price-btn-outline">Monatlich starten</a>
       </div>
 
       <div class="price-card featured reveal" style="position:relative;overflow:hidden;">
@@ -718,7 +718,7 @@ footer {
           <li>Direkte Feedback-Linie</li>
           <li style="color:#c8961e;font-weight:600;">⚡ Preis steigt nach 50 Käufen</li>
         </ul>
-        <a href="#kontakt" class="price-btn price-btn-gold">Lifetime sichern →</a>
+        <a href="#" onclick="lpBuy('phase1');return false;" class="price-btn price-btn-gold">Lifetime sichern →</a>
         <!-- Countdown Streifen -->
         <div style="margin-top:12px;padding:8px;border-radius:8px;
           background:rgba(200,150,30,.1);border:1px solid #c8961e33;
@@ -896,6 +896,116 @@ const obs = new IntersectionObserver(entries=>{
   });
 },{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+
+<!-- ═══════════════════════════════════════════════════
+     KAUF-MODAL — E-Mail erfassen → NOWPayments-Invoice
+═══════════════════════════════════════════════════ -->
+<div id="buy-modal" style="display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.72);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+    max-width:420px;width:100%;padding:30px;position:relative;">
+    <button id="buy-close" aria-label="Schließen" style="position:absolute;top:12px;right:16px;
+      background:none;border:none;color:var(--text-muted);font-size:24px;cursor:pointer;line-height:1;">×</button>
+
+    <div id="buy-title" style="font-family:'Cormorant Garamond',serif;font-size:25px;
+      font-weight:600;color:var(--text);margin-bottom:6px;">Early Adopter Lifetime</div>
+    <div id="buy-sub" style="font-size:14px;color:var(--text-dim);margin-bottom:22px;">
+      49 USDC · einmalig für immer</div>
+
+    <label for="buy-email" style="display:block;font-size:12px;color:var(--text-muted);
+      letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;
+      font-family:'DM Mono',monospace;">E-Mail für den Zugangscode</label>
+    <input id="buy-email" type="email" placeholder="deine@mail.de" autocomplete="email"
+      style="width:100%;background:var(--bg);border:1px solid var(--border-dim);
+      color:var(--text);border-radius:10px;padding:13px 14px;font-size:15px;
+      font-family:'Outfit',sans-serif;outline:none;margin-bottom:6px;">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">
+      Dorthin schicken wir deinen Zugangscode sofort nach Zahlungseingang.</div>
+
+    <button id="buy-go" class="price-btn price-btn-gold"
+      style="border:none;cursor:pointer;font-family:'Outfit',sans-serif;">Weiter zur Zahlung →</button>
+    <div id="buy-status" style="font-size:13px;margin-top:14px;min-height:18px;
+      text-align:center;line-height:1.5;color:var(--text-dim);"></div>
+
+    <div style="font-size:11px;color:var(--text-muted);margin-top:16px;text-align:center;line-height:1.5;">
+      Zahlung via NOWPayments · USDT/USDC (BEP20/ERC20) · auch direkt aus der AURUM-Wallet</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const FN   = 'https://dinroafownpqdqtwvjkl.supabase.co/functions/v1/nowpayments-create';
+  const ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpbnJvYWZvd25wcWRxdHd2amtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDE2MDcsImV4cCI6MjA5MzcxNzYwN30.agvQrTwumWOcGY5tSDslYmXspw8c7JwfDM2B_ixWIvw';
+  const PRODUCTS = {
+    phase1:  { title:'Early Adopter Lifetime', sub:'49 USDC · einmalig für immer' },
+    monthly: { title:'Monatlicher Zugang',      sub:'12 USDC / Monat' },
+    phase2:  { title:'Lifetime Phase 2',        sub:'69 USDC · einmalig für immer' }
+  };
+  const modal   = document.getElementById('buy-modal');
+  const titleE  = document.getElementById('buy-title');
+  const subE    = document.getElementById('buy-sub');
+  const emailE  = document.getElementById('buy-email');
+  const goE     = document.getElementById('buy-go');
+  const statusE = document.getElementById('buy-status');
+  let current   = 'phase1';
+
+  function open(product){
+    current = PRODUCTS[product] ? product : 'phase1';
+    const p = PRODUCTS[current];
+    titleE.textContent = p.title;
+    subE.textContent   = p.sub;
+    statusE.textContent = '';
+    emailE.value = '';
+    goE.disabled = false; goE.style.opacity = '1';
+    modal.style.display = 'flex';
+    setTimeout(function(){ emailE.focus(); }, 50);
+  }
+  function close(){ modal.style.display = 'none'; }
+
+  window.lpBuy = open;
+  document.getElementById('buy-close').addEventListener('click', close);
+  modal.addEventListener('click', function(e){ if(e.target === modal) close(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+  emailE.addEventListener('keydown', function(e){ if(e.key === 'Enter') goE.click(); });
+
+  function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  goE.addEventListener('click', async function(){
+    const email = emailE.value.trim();
+    if(!validEmail(email)){
+      statusE.style.color = '#e83858';
+      statusE.textContent = 'Bitte eine gültige E-Mail eingeben.';
+      emailE.focus();
+      return;
+    }
+    goE.disabled = true; goE.style.opacity = '.6';
+    statusE.style.color = 'var(--text-dim)';
+    statusE.textContent = 'Zahlung wird vorbereitet…';
+    try {
+      const res = await fetch(FN, {
+        method:'POST',
+        headers:{ 'Authorization':'Bearer '+ANON, 'apikey':ANON, 'Content-Type':'application/json' },
+        body: JSON.stringify({ product: current, email: email })
+      });
+      const data = await res.json().catch(function(){ return {}; });
+      if(!res.ok || !data.invoice_url){
+        statusE.style.color = '#e83858';
+        statusE.textContent = 'Zahlung konnte nicht gestartet werden. Bitte erneut versuchen.';
+        goE.disabled = false; goE.style.opacity = '1';
+        return;
+      }
+      statusE.style.color = 'var(--green)';
+      statusE.textContent = 'Weiter zur Zahlung…';
+      window.location.href = data.invoice_url;
+    } catch(err){
+      statusE.style.color = '#e83858';
+      statusE.textContent = 'Netzwerkfehler. Bitte erneut versuchen.';
+      goE.disabled = false; goE.style.opacity = '1';
+    }
+  });
+})();
 </script>
 </body>
 </html>
